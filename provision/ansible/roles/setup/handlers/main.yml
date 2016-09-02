@@ -1,0 +1,3 @@
+- name: Restart supervisor
+  #shell: /etc/init.d/supervisord restart
+  service: name=supervisord state=restarted

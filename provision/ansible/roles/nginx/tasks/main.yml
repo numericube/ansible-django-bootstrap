@@ -1,0 +1,40 @@
+
+- name: Add PPA for Nginx
+  apt_repository: repo='ppa:nginx/stable' state=present update_cache=yes
+
+- name: Install the Nginx HTTP server
+  apt: name=nginx state=present
+
+- name: Create the essential directories for Nginx
+  file: path={{ item }} state=directory mode=0755
+  with_items:
+    - /etc/nginx/
+    - /etc/nginx/conf.d/
+    - /var/log/nginx/
+
+- name: Enable the Nginx service
+  service: name=nginx enabled=yes
+
+- name: Start the Nginx service
+  service: name=nginx state=started
+
+- name: Remove the default Nginx site
+  file: path=/etc/nginx/sites-enabled/default state=absent
+  notify:
+    - Restart Nginx
+
+#- name: Copy the supervisor configuration for Nginx
+#  template: src={{ role_path }}/files/-etc-supervisor-conf.d-nginx.conf dest=/etc/supervisor/conf.d/nginx.conf owner=root group=root mode=0644
+#  notify:
+#    - Restart supervisor
+#    - Reload the supervisor service for Nginx
+
+- name: Copy the Nginx configuration
+  copy: src={{ role_path }}/files/-etc-nginx-nginx.conf dest=/etc/nginx/nginx.conf owner=root group=root mode=0644
+  notify:
+    - Restart Nginx
+
+- name: Copy the Nginx configuration for Django
+  template: src={{ role_path }}/files/-etc-nginx-conf.d-django.conf dest=/etc/nginx/conf.d/django.conf owner=root group=root mode=0644
+  notify:
+    - Restart Nginx

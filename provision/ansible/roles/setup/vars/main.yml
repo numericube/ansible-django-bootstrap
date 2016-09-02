@@ -1,0 +1,4 @@
+
+www_home: /opt/www
+django_home: /vagrant/template
+django_appname: template

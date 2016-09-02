@@ -1,0 +1,42 @@
+
+- name: Register the virtualenv directory for further usage
+  stat: path={{ www_home }}/ve_django
+  register: ve_django
+
+- name: Create a virtualenv for Django
+  command: virtualenv ve_django
+    chdir={{ www_home }}
+  become: yes
+  become_user: www
+  when: ve_django.stat.isdir is not defined
+
+- name: Activate the virtualenv on www logon
+  lineinfile: dest={{ www_home }}/.profile regexp="bin/activate" line=". ~/ve_django/bin/activate"
+
+- name: Create the essential directories for Django
+  file: path={{ item }} state=directory mode=0755
+  with_items:
+    - /var/log/django/
+
+- name: Copy the supervisor configuration for Django
+  template: src={{ role_path }}/files/-etc-supervisor-conf.d-django.conf dest=/etc/supervisor/conf.d/django.conf owner=root group=root mode=0644
+  notify:
+    - Restart supervisor
+    - Reload the supervisor service for Django
+
+- name: Install the SQLite database
+  apt: name=sqlite3 state=present
+
+- block:
+
+  - name: Install the Django framework and the WSGI server Gunicorn
+    pip: name={{ item }} virtualenv={{ www_home }}/ve_django
+    with_items:
+      - django
+      - gunicorn
+
+  - name: Install the SASS compiler
+    gem: name=sass state=present
+
+  become: yes
+  become_user: www

@@ -1,0 +1,8 @@
+
+# Basic playbook to build various machines for this project
+- hosts: wwwhost
+  roles:
+    - setup
+    - django
+    - nginx
+  serial: "1"

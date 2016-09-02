@@ -1,0 +1,2 @@
+- name: Reload the supervisor service for Django
+  shell: supervisorctl reload django

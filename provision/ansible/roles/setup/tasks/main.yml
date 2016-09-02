@@ -1,0 +1,55 @@
+
+- name: Update the APT cache
+  apt: update_cache=yes
+
+- name: Install 'ntpd' to have nice time on our servers
+  apt: name=ntp state=present
+
+- name: Ensure that the 'sudo' package is present
+  apt: name=sudo state=present
+
+- name: Create the 'sudo' group
+  group: name=sudo state=present
+
+- name: Make sure we can sudo as 'sudo' group
+  lineinfile: dest=/etc/sudoers state=present regexp='^%sudo' line='%sudo ALL=(ALL) NOPASSWD:ALL'
+
+- name: Ensure Python 2.7 is up to date and install other useful dependencies
+  apt: name={{ item }} state=present
+  with_items:
+   - python2.7
+   - python2.7-dev
+   - python-virtualenv
+   - python-pip
+   - libssl-dev
+   - libffi-dev
+
+- name: Install the Ruby interpreter
+  apt: name=ruby state=present
+
+- name: Install supervisor
+  pip: name=supervisor
+
+- name: Install the supervisor service
+  copy: src={{ role_path }}/files/-etc-systemd-system-supervisord.service dest=/etc/systemd/system/supervisord.service owner=root group=root mode=0744
+
+- name: Create the essential directories for supervisor
+  file: path={{ item }} state=directory mode=0755
+  with_items:
+    - /etc/supervisor
+    - /etc/supervisor/conf.d
+    - /var/log/supervisord/
+
+- name: Copy the supervisor configuration
+  copy: src={{ role_path }}/files/-etc-supervisor-supervisord.conf dest=/etc/supervisor/supervisord.conf owner=root group=root mode=0644
+  notify:
+    - Restart supervisor
+
+- name: Enable the supervisor service
+  service: name=supervisord enabled=yes
+
+- name: Start the supervisor service
+  service: name=supervisord state=started
+
+- name: Create the user we'll be working with
+  user: name=www state=present home={{ www_home }} uid=2001 groups=sudo
