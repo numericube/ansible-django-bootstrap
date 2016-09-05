@@ -1,6 +1,6 @@
 
-- name: Register the virtualenv directory for further usage
-  stat: path={{ www_home }}/ve_django
+# Register the virtualenv directory for further usage
+- stat: path={{ www_home }}/ve_django
   register: ve_django
 
 - name: Create a virtualenv for Django
@@ -14,9 +14,7 @@
   lineinfile: dest={{ www_home }}/.profile regexp="bin/activate" line=". ~/ve_django/bin/activate"
 
 - name: Create the essential directories for Django
-  file: path={{ item }} state=directory mode=0755
-  with_items:
-    - /var/log/django/
+  file: path=/var/log/django/ state=directory mode=0755
 
 - name: Copy the supervisor configuration for Django
   template: src={{ role_path }}/files/-etc-supervisor-conf.d-django.conf dest=/etc/supervisor/conf.d/django.conf owner=root group=root mode=0644
@@ -35,8 +33,74 @@
       - django
       - gunicorn
 
-  - name: Install the SASS compiler
-    gem: name=sass state=present
+  # Check if the Django project already exists
+  - stat: path={{ django_home }}
+    register: django_home_stat
+
+  - block:
+
+    - name: Create the Django project
+      #django_manage: command="startproject {{ django_project }}" app_path={{ django_home }}/../ virtualenv={{ www_home }}/ve_django
+      command: "{{ www_home }}/ve_django/bin/django-admin startproject {{ django_project }} chdir=/vagrant/"
+
+    - name: Create the Django app
+      command: "{{ www_home }}/ve_django/bin/django-admin startapp {{ django_appname }} chdir={{ django_home }}"
+
+    - name: Perform the migrations for the embedded Django apps
+      command: "{{ www_home }}/ve_django/bin/python manage.py migrate chdir={{ django_home }}"
+      notify:
+        - Reload the supervisor service for Django
+
+    - name: Create some directories inside the Django project
+      file: path={{ django_home }}/{{ item }} state=directory mode=0755
+      with_items:
+        - static/
+        - "{{ django_appname }}/templates/"
+        - "{{ django_appname }}/static/"
+
+    - name: Copy the initial files for the Django app 1/2
+      template: src={{ item.src }} dest={{ item.dest }} owner=vagrant group=vagrant mode=0644
+      with_items:
+        - { src: "{{ role_path }}/files/urls.py", dest: "{{ django_home }}/{{ django_project }}/urls.py" }
+
+    - name: Copy the initial files for the Django app 2/2
+      copy: src={{ item.src }} dest={{ item.dest }} owner=vagrant group=vagrant mode=0644
+      with_items:
+        - { src: "{{ role_path }}/files/views.py", dest: "{{ django_home }}/{{ django_appname }}/views.py" }
+        - { src: "{{ role_path }}/files/base.html", dest: "{{ django_home }}/{{ django_appname }}/templates/base.html" }
+        - { src: "{{ role_path }}/files/home.html", dest: "{{ django_home }}/{{ django_appname }}/templates/home.html" }
+
+    - name: Download the Bootstrap library
+      get_url: url=https://github.com/twbs/bootstrap/archive/v{{ bootstrap_version }}.zip dest={{ django_home }}/bootstrap.zip
+
+    - name: Extract the Bootstrap library
+      unarchive: src={{ django_home }}/bootstrap.zip dest={{ django_home }}/ copy=no
+
+    - name: Link the Bootstrap library files to the Django app static repository
+      file: src={{ django_home }}/bootstrap-{{ bootstrap_version }}/dist  dest={{ django_home }}/{{ django_appname }}/static/bootstrap owner=vagrant group=vagrant state=link
+
+    - name: Delete the Bootstrap zip
+      file: path={{ django_home }}/bootstrap.zip state=absent
+
+    - name: Add the static root in the Django settings
+      lineinfile: dest={{ django_home }}/{{ django_project }}/settings.py line="STATIC_ROOT = '{{ django_home }}/static'"
+
+    - name: Add the application in the Django settings
+      lineinfile: dest={{ django_home }}/{{ django_project }}/settings.py line="INSTALLED_APPS += ['{{ django_appname }}']"
+
+    when: django_home_stat.stat.isdir is not defined
+
+  - name: Collect all the static files
+    command: "{{ www_home }}/ve_django/bin/python manage.py collectstatic --noinput chdir={{ django_home }}"
 
   become: yes
   become_user: www
+
+- name: Install the global Node.js dependencies
+  npm: name={{ item }} global=yes
+  with_items:
+    - grunt-cli
+    - npm-watch
+
+- name: Install the Bootstrap Node.js dependencies
+  npm: path={{ django_home }}/bootstrap-{{ bootstrap_version }}

@@ -17,13 +17,16 @@ Vagrant.configure(2) do |config|
   end
 
   # Folder sharing between the host and the guest VM
-  config.vm.synced_folder ".", "/vagrant",  mount_options: ["dmode=777,fmode=666"]
+  config.vm.synced_folder ".", "/vagrant", mount_options: ["dmode=777,fmode=666"]
 
   # Use the default Vagrant "insecure key" to let Ansible access the VM
   config.ssh.insert_key = false
 
   # ===== NETWORK =====
   
+  # Django (runserver mode)
+  config.vm.network :forwarded_port, guest: 8000, host: 8000
+
   # Nginx (HTTP and HTTPS)
   config.vm.network :forwarded_port, guest: 80, host: 8080
   config.vm.network :forwarded_port, guest: 443, host: 8090

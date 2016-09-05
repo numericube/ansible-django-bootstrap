@@ -23,12 +23,6 @@
   notify:
     - Restart Nginx
 
-#- name: Copy the supervisor configuration for Nginx
-#  template: src={{ role_path }}/files/-etc-supervisor-conf.d-nginx.conf dest=/etc/supervisor/conf.d/nginx.conf owner=root group=root mode=0644
-#  notify:
-#    - Restart supervisor
-#    - Reload the supervisor service for Nginx
-
 - name: Copy the Nginx configuration
   copy: src={{ role_path }}/files/-etc-nginx-nginx.conf dest=/etc/nginx/nginx.conf owner=root group=root mode=0644
   notify:

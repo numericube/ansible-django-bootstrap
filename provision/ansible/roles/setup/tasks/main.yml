@@ -23,9 +23,23 @@
    - python-pip
    - libssl-dev
    - libffi-dev
+   - build-essential
+   - unzip
 
-- name: Install the Ruby interpreter
-  apt: name=ruby state=present
+- name: Install Node.js and its package manager
+  apt: name={{ item }} state=present
+  with_items:
+    - nodejs
+    - npm
+
+- name: Create the directory for Node.js global packages
+  file: path=/usr/local/lib/npm state=directory owner=vagrant group=vagrant mode=0755
+
+- name: Add the Node.js global packages to the $PATH
+  template: src={{ role_path }}/files/-etc-profile.d-npm.sh dest=/etc/profile.d/npm.sh mode=0644
+
+- name: Create a symlink in order to have a 'node' binary
+  file: src=/usr/bin/nodejs dest=/usr/bin/node owner=root group=root state=link
 
 - name: Install supervisor
   pip: name=supervisor
