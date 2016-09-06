@@ -10,6 +10,7 @@
   with_items:
     - /etc/nginx/
     - /etc/nginx/conf.d/
+    - /etc/nginx/certs/
     - /var/log/nginx/
 
 - name: Enable the Nginx service
@@ -20,6 +21,14 @@
 
 - name: Remove the default Nginx site
   file: path=/etc/nginx/sites-enabled/default state=absent
+  notify:
+    - Restart Nginx
+
+- name: Copy the Nginx SSL certificates
+  copy: src={{ role_path }}/files/{{ item }} dest=/etc/nginx/certs/{{ item }} owner=root group=root mode=0644
+  with_items:
+    - "{{ nginx_cert }}"
+    - "{{ nginx_key }}"
   notify:
     - Restart Nginx
 

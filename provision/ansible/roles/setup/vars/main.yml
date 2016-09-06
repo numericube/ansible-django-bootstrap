@@ -8,5 +8,9 @@ django_project: template
 django_appname: default
 django_home: /vagrant/{{ django_project }}
 
+# Names of the SSL certificate and key used by Nginx
+nginx_cert: selfsigned.crt
+nginx_key: selfsigned.key
+
 # Version of the Bootstrap library to use
 bootstrap_version: 3.3.7

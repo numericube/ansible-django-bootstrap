@@ -62,6 +62,12 @@ You could also do a one-time compilation of the library as is :
 
 Note that the Django base template uses the non-minified version of Bootstrap by default because it's the one that's updated by `grunt watch`, so don't forget to do a `grunt dist` and use the minifed version of the Bootstrap files when you've done your work on them.
 
+# Using HTTPS on Nginx
+
+Nginx uses by default a self-signed SSL certificate to enable HTTPS and HTTP2.
+
+You can replace them with your own certificates by putting them in the `/provision/ansible/roles/nginx/files` folder, and replacing the corresponding values in the `/provision/ansible/roles/setup/vars/main.yml` file.
+
 # VM details
 
 The main user is `www` and its home is under `/opt/www`.
