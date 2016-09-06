@@ -5,6 +5,7 @@ A skeleton of a Django+bootstrap+Vagrant+Ansible combo.
 # Requirements
 
 * Vagrant >= 1.7
+* Ansible >= 2.0
 * VirtualBox
 
 # Overview
@@ -25,11 +26,24 @@ Components :
 
 # Usage
 
-Start the vagrant and let the provision setup everything.
+Start by cloning this repository somewhere on your computer, and go into it.
+
+	$ git clone https://github.com/numericube/ansible-django-bootstrap.git
+	$ cd ansible-django-bootstrap/
+
+Now all you have to do is starting the vagrant and let the provision setup everything.
 
 	$ vagrant up
 
-Then, you can access the Django website using <http://localhost:8080> or <https://localhost:8090> for the secure version.
+If the provisioning went well, you can access the Django website using <http://localhost:8080> or <https://localhost:8090> for the secure version.
+
+In order to work inside the vagrant, you should open an SSH connexion with it.
+
+	$ vagrant ssh
+
+You'll now be greeted with a terminal logged in as the `vagrant` user. As the commands shown below assume that you're logged on as the `www` user, you can change the user thanks to the `sudo` command :
+
+	$ sudo su - www
 
 # Running Django
 
@@ -73,7 +87,3 @@ You can replace them with your own certificates by putting them in the `/provisi
 The main user is `www` and its home is under `/opt/www`.
 
 The root repository is synced under `/vagrant`.
-
-All the commands shown above assume that you're logged on as the `www` user. You can do it thanks to the `sudo` command :
-
-	$ sudo su - www
