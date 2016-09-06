@@ -10,7 +10,7 @@ Vagrant.configure(2) do |config|
   # Base box is Ubuntu 16.04 LTS (Xenial Xerus)
   # Note : we're using a commuity-powered base image as long as the Ubuntu official image
   # is broken with VirtualBox, see more at https://bugs.launchpad.net/cloud-images/+bug/1565985
-  config.vm.box = "boxcutter/ubuntu1604"
+  config.vm.box = "bento/ubuntu-16.04"
 
   # Change the VM name so that Ansible will recoignize it as a target host for provisioning
   config.vm.define "vagrantdjangobootstrap" do |foo|
