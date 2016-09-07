@@ -5,7 +5,7 @@ A skeleton of a Django+bootstrap+Vagrant+Ansible combo.
 # Requirements
 
 * Vagrant >= 1.7
-* Ansible >= 2.0
+* Ansible >= 2.0, < 2.1
 * VirtualBox
 
 # Overview
@@ -26,10 +26,12 @@ Components :
 
 # Usage
 
-Start by cloning this repository somewhere on your computer, and go into it.
+Start by cloning this repository somewhere on your computer, let's say in a new folder called `myproject`, and go into it.
 
-	$ git clone https://github.com/numericube/ansible-django-bootstrap.git
-	$ cd ansible-django-bootstrap/
+	$ git clone https://github.com/numericube/ansible-django-bootstrap.git myproject/
+	$ cd myproject/
+
+In order to provision the virtual machine, you must have Ansible installed in your host. Check the [Ansible documentation](http://docs.ansible.com/ansible/intro_installation.html#installing-the-control-machine) to know how to install it depending on your operating system.
 
 Now all you have to do is starting the vagrant and let the provision setup everything.
 
@@ -81,6 +83,18 @@ Note that the Django base template uses the non-minified version of Bootstrap by
 Nginx uses by default a self-signed SSL certificate to enable HTTPS and HTTP2.
 
 You can replace them with your own certificates by putting them in the `/provision/ansible/roles/nginx/files` folder, and replacing the corresponding values in the `/provision/ansible/roles/setup/vars/main.yml` file.
+
+# Customizing the provisioning
+
+If you look into the variables of the `/provision/ansible/roles/setup/vars/main.yml` file, you'll see a few ways to customize the provision before you build your vagrant :
+
+* `www_home` : Home directory of the `www` user
+* `django_project` : Name of the Django project
+* `django_appname` : Name of the default Django application inside the project
+* `django_home` : Root directory of the Django project, meant to be inside the shared folder of the Vagrant
+* `nginx_cert` : SSL certificate for the web server
+* `nginx_key`: Key for the SSL certificate
+* `bootstrap_version` : Version of the Bootstrap library to download and setup
 
 # VM details
 
