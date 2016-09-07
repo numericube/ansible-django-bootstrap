@@ -31,6 +31,11 @@ Start by cloning this repository somewhere on your computer, let's say in a new 
 	$ git clone https://github.com/numericube/ansible-django-bootstrap.git myproject/
 	$ cd myproject/
 
+From there, we're gonna make this project your own by deleting the reference to this git repository and by creating a new repository from scratch :
+
+	$ rm -rf .git
+	$ git init
+
 In order to provision the virtual machine, you must have Ansible installed in your host. Check the [Ansible documentation](http://docs.ansible.com/ansible/intro_installation.html#installing-the-control-machine) to know how to install it depending on your operating system.
 
 Now all you have to do is starting the vagrant and let the provision setup everything.
@@ -69,7 +74,7 @@ The Grunt task runner bundled with Bootstrap can build the source files as soon 
 
 You just have to navigate to the Bootstrap directory and launch the watch :
 
-	$ cd /vagrant/{ project name }/bootstrap-{ version }/
+	$ cd /vagrant/{ project name }/assets/bootstrap-{ version }/
 	$ grunt watch
 
 You could also do a one-time compilation of the library as is :

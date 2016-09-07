@@ -54,6 +54,7 @@
     - name: Create some directories inside the Django project
       file: path={{ django_home }}/{{ item }} state=directory mode=0755
       with_items:
+        - assets/
         - static/
         - "{{ django_appname }}/templates/"
         - "{{ django_appname }}/static/"
@@ -74,10 +75,10 @@
       get_url: url=https://github.com/twbs/bootstrap/archive/v{{ bootstrap_version }}.zip dest={{ django_home }}/bootstrap.zip
 
     - name: Extract the Bootstrap library
-      unarchive: src={{ django_home }}/bootstrap.zip dest={{ django_home }}/ copy=no
+      unarchive: src={{ django_home }}/bootstrap.zip dest={{ django_home }}/assets/ copy=no
 
     - name: Link the Bootstrap library files to the Django app static repository
-      file: src={{ django_home }}/bootstrap-{{ bootstrap_version }}/dist  dest={{ django_home }}/{{ django_appname }}/static/bootstrap owner=vagrant group=vagrant state=link
+      file: src={{ django_home }}/assets/bootstrap-{{ bootstrap_version }}/dist  dest={{ django_home }}/{{ django_appname }}/static/bootstrap owner=vagrant group=vagrant state=link
 
     - name: Delete the Bootstrap zip
       file: path={{ django_home }}/bootstrap.zip state=absent
