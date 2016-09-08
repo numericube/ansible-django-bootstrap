@@ -83,6 +83,12 @@ You could also do a one-time compilation of the library as is :
 
 Note that the Django base template uses the non-minified version of Bootstrap by default because it's the one that's updated by `grunt watch`, so don't forget to do a `grunt dist` and use the minifed version of the Bootstrap files when you've done your work on them.
 
+# Customizing Bootstrap
+
+If you wish to edit some variables, components or just add your own ones right into the Bootstrap library, you can do it in the `site_variables.less` or the `site_components.less` files that are inside the `less/` folder of the library.
+
+As these files have already been included into the Bootstrap core file, you don't have to do so yourself : their contents will be parsed while the Bootstrap compilation runs.
+
 # Using HTTPS on Nginx
 
 Nginx uses by default a self-signed SSL certificate to enable HTTPS and HTTP2.

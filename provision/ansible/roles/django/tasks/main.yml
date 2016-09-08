@@ -77,6 +77,21 @@
     - name: Extract the Bootstrap library
       unarchive: src={{ django_home }}/bootstrap.zip dest={{ django_home }}/assets/ copy=no
 
+    #- name: Copy the initial files for the Bootstrap library
+    #  copy: src={{ role_path }}/files/site_custom.less dest={{ django_home }}/assets/bootstrap-{{ bootstrap_version }}/less owner=vagrant group=vagrant mode=0644
+
+    - name: Create the custom site files into the Bootstrap library
+      copy: content="" dest={{ item }} force=no
+      with_items:
+        - "{{ django_home }}/assets/bootstrap-{{ bootstrap_version }}/less/site_variables.less"
+        - "{{ django_home }}/assets/bootstrap-{{ bootstrap_version }}/less/site_components.less"
+
+    - name: Link the custom site files into the Bootstrap main file 1/2
+      lineinfile: dest={{ django_home }}/assets/bootstrap-{{ bootstrap_version }}/less/bootstrap.less regexp="^@import \"site_variables" insertafter="@import \"variables.less\";" line="@import \"site_variables.less\";" state=present
+
+    - name: Link the custom site files into the Bootstrap main file 2/2
+      lineinfile: dest={{ django_home }}/assets/bootstrap-{{ bootstrap_version }}/less/bootstrap.less regexp="^@import \"site_components" insertbefore=EOF line="@import \"site_components.less\";" state=present
+
     - name: Link the Bootstrap library files to the Django app static repository
       file: src={{ django_home }}/assets/bootstrap-{{ bootstrap_version }}/dist  dest={{ django_home }}/{{ django_appname }}/static/bootstrap owner=vagrant group=vagrant state=link
 
@@ -104,4 +119,4 @@
     - npm-watch
 
 - name: Install the Bootstrap Node.js dependencies
-  npm: path={{ django_home }}/bootstrap-{{ bootstrap_version }}
+  npm: path={{ django_home }}/assets/bootstrap-{{ bootstrap_version }}
