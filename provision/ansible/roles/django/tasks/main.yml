@@ -83,14 +83,17 @@
     - name: Create the custom site files into the Bootstrap library
       copy: content="" dest={{ item }} force=no
       with_items:
-        - "{{ django_home }}/assets/bootstrap-{{ bootstrap_version }}/less/site_variables.less"
-        - "{{ django_home }}/assets/bootstrap-{{ bootstrap_version }}/less/site_components.less"
+        - "{{ django_home }}/assets/site_variables.less"
+        - "{{ django_home }}/assets/site_components.less"
 
     - name: Link the custom site files into the Bootstrap main file 1/2
-      lineinfile: dest={{ django_home }}/assets/bootstrap-{{ bootstrap_version }}/less/bootstrap.less regexp="^@import \"site_variables" insertafter="@import \"variables.less\";" line="@import \"site_variables.less\";" state=present
+      lineinfile: dest={{ django_home }}/assets/bootstrap-{{ bootstrap_version }}/less/bootstrap.less regexp="^@import \"../../site_variables" insertafter="@import \"variables.less\";" line="@import \"../../site_variables.less\";" state=present
 
     - name: Link the custom site files into the Bootstrap main file 2/2
-      lineinfile: dest={{ django_home }}/assets/bootstrap-{{ bootstrap_version }}/less/bootstrap.less regexp="^@import \"site_components" insertbefore=EOF line="@import \"site_components.less\";" state=present
+      lineinfile: dest={{ django_home }}/assets/bootstrap-{{ bootstrap_version }}/less/bootstrap.less regexp="^@import \"../../site_components" insertbefore=EOF line="@import \"../../site_components.less\";" state=present
+
+    - name: Edit the Bootstrap compilation file
+      replace: dest={{ django_home }}/assets/bootstrap-{{ bootstrap_version }}/Gruntfile.js regexp="'less\/\*\*\/\*\.less',$" replace="['less/**/*.less', '../*.less'],"
 
     - name: Link the Bootstrap library files to the Django app static repository
       file: src={{ django_home }}/assets/bootstrap-{{ bootstrap_version }}/dist  dest={{ django_home }}/{{ django_appname }}/static/bootstrap owner=vagrant group=vagrant state=link

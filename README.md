@@ -85,7 +85,7 @@ Note that the Django base template uses the non-minified version of Bootstrap by
 
 # Customizing Bootstrap
 
-If you wish to edit some variables, components or just add your own ones right into the Bootstrap library, you can do it in the `site_variables.less` or the `site_components.less` files that are inside the `less/` folder of the library.
+If you wish to edit some variables, components or just add your own ones right into the Bootstrap library, you can do it in the `site_variables.less` or the `site_components.less` files that are inside the `assets/` folder of the Django project.
 
 As these files have already been included into the Bootstrap core file, you don't have to do so yourself : their contents will be parsed while the Bootstrap compilation runs.
 
