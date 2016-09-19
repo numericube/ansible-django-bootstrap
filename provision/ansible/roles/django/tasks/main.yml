@@ -80,8 +80,11 @@
     #- name: Copy the initial files for the Bootstrap library
     #  copy: src={{ role_path }}/files/site_custom.less dest={{ django_home }}/assets/bootstrap-{{ bootstrap_version }}/less owner=vagrant group=vagrant mode=0644
 
+    - name: Download the JQuery library
+      get_url: url=https://ajax.googleapis.com/ajax/libs/jquery/{{ jquery_version }}/jquery.min.js dest={{django_home}}/assets/jquery-{{jquery_version}}.min.js
+
     - name: Create the custom site files into the Bootstrap library
-      copy: content="" dest={{ item }} force=no
+      copy: content="// customise bootstrap here" dest={{ item }} force=no
       with_items:
         - "{{ django_home }}/assets/site_variables.less"
         - "{{ django_home }}/assets/site_components.less"
@@ -97,6 +100,9 @@
 
     - name: Link the Bootstrap library files to the Django app static repository
       file: src={{ django_home }}/assets/bootstrap-{{ bootstrap_version }}/dist  dest={{ django_home }}/{{ django_appname }}/static/bootstrap owner=vagrant group=vagrant state=link
+
+    - name: Link the Jquery library files to the Django app static repository
+      file: src={{ django_home }}/assets/jquery-{{jquery_version}}.min.js  dest={{ django_home }}/{{ django_appname }}/static/jquery-{{jquery_version}}.min.js owner=vagrant group=vagrant state=link
 
     - name: Delete the Bootstrap zip
       file: path={{ django_home }}/bootstrap.zip state=absent

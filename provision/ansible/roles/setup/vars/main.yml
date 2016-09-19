@@ -4,8 +4,8 @@ www_home: /opt/www
 
 # Replace the project and app names if you already have a project in the root
 # directory, or if you want different names on the automatic project creation.
-django_project: template
-django_appname: default
+django_project: myproject
+django_appname: myapp
 django_home: /vagrant/{{ django_project }}
 
 # Names of the SSL certificate and key used by Nginx
@@ -14,3 +14,4 @@ nginx_key: selfsigned.key
 
 # Version of the Bootstrap library to use
 bootstrap_version: 3.3.7
+jquery_version: 1.12.4
